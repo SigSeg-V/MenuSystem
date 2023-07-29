@@ -70,13 +70,42 @@ public:
 	// Ptr to the online session interface
 	IOnlineSessionPtr OnlineSessionInterface;
 
+	// Delegate and callback for joining a game session
+	
+#pragma region find game session
+
+protected:
+	void OnFindSessionsComplete(bool bWasSuccessful);
+private:
+	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+#pragma endregion 
+	
+#pragma region join game session
+	
 protected:
 	UFUNCTION(BlueprintCallable)
+	void JoinGameSession();
+	
+	void OnJoinGameSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	
+private:
+	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
+	
+#pragma endregion
+	
+	// Delegate and callback for creating a game session
+#pragma region create game session
+	
+protected:	
+	UFUNCTION(BlueprintCallable)
 	void CreateGameSession();
-
+	
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 private:
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
+	
+#pragma endregion 
 };
 
