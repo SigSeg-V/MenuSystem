@@ -36,6 +36,35 @@ void UMultiplayerSessionsMenu::ShowMenu(int32 NumPublicConnections, FString Type
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
+
+	// binding the MPS delegate
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MPSCreateSessionComplete.AddDynamic(this, &ThisClass::OnMpsCreateSession);
+	}
+}
+
+void UMultiplayerSessionsMenu::OnMpsCreateSession(bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, "Session successfully created!");
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, "Session was not created!");
+		}
+	}
+	
+	if (UWorld* World = GetWorld())
+	{
+		World->ServerTravel("/Game/ThirdPerson/Maps/LobbyMap?listen");
+	}
 }
 
 void UMultiplayerSessionsMenu::HideMenu()
@@ -54,35 +83,15 @@ void UMultiplayerSessionsMenu::HideMenu()
 
 void UMultiplayerSessionsMenu::HostButtonClicked()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			FColor::Green,
-			FString::Printf(TEXT("Clicked host button")));
-	}
-
 	if (MultiplayerSessionsSubsystem != nullptr)
 	{
 		MultiplayerSessionsSubsystem->CreateSession(NumConnections, MatchType);
-		if (UWorld* World = GetWorld())
-		{
-			World->ServerTravel("/Game/ThirdPerson/Maps/LobbyMap?listen");
-		}
 	}
 }
 
 void UMultiplayerSessionsMenu::JoinButtonClicked()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			FColor::Blue,
-			FString::Printf(TEXT("Clicked join button")));
-	}
+
 }
 
 bool UMultiplayerSessionsMenu::Initialize()

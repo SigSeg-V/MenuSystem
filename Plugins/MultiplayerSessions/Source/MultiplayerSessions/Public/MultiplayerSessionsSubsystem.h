@@ -8,6 +8,8 @@
 #include "OnlineSessionSettings.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMPSOnCreateSessionComplete, bool, bWasSuccessful);
+
 /**
  * Handles all online session functionality including creating, joining, searching and destroying sessions.
  * This class is inherited from UGameInstanceSubsystem as such persists as long as the game is open.
@@ -48,6 +50,9 @@ public:
 	 * @brief Destroy the current session
 	 */
 	void DestroySession();
+
+	// Delegate for the menu to bind to
+	FMPSOnCreateSessionComplete MPSCreateSessionComplete;
 	
 protected:
 

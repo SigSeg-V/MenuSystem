@@ -24,6 +24,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowMenu(int32 NumPublicConnections = 6, FString TypeOfMatch = "ffa");
 
+protected:
+
+	// Callback for the MPS delegate
+	UFUNCTION()
+	void OnMpsCreateSession(bool bWasSuccessful);
+	
 private:
 
 	UPROPERTY(meta = (BindWidget))
