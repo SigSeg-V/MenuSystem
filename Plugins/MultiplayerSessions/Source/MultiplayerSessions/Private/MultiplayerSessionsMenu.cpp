@@ -41,6 +41,11 @@ void UMultiplayerSessionsMenu::ShowMenu(int32 NumPublicConnections, FString Type
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MPSCreateSessionComplete.AddDynamic(this, &ThisClass::OnMpsCreateSession);
+		MultiplayerSessionsSubsystem->MPSStartSessionComplete.AddDynamic(this, &ThisClass::OnMpsStartSession);
+		MultiplayerSessionsSubsystem->MPSDestroySessionComplete.AddDynamic(this, &ThisClass::OnMpsDestroySession);
+		MultiplayerSessionsSubsystem->MPSCreateSessionComplete.AddDynamic(this, &ThisClass::OnMpsCreateSession);
+		MultiplayerSessionsSubsystem->MPSFindSessionsComplete.AddUObject(this, &ThisClass::OnMpsFindSessions);
+		MultiplayerSessionsSubsystem->MPSJoinSessionComplete.AddUObject(this, &ThisClass::OnMpsJoinSession);
 	}
 }
 
@@ -65,6 +70,23 @@ void UMultiplayerSessionsMenu::OnMpsCreateSession(bool bWasSuccessful)
 	{
 		World->ServerTravel("/Game/ThirdPerson/Maps/LobbyMap?listen");
 	}
+}
+
+void UMultiplayerSessionsMenu::OnMpsFindSessions(const TArray<FOnlineSessionSearchResult>& SearchResults,
+	bool bWasSuccessful)
+{
+}
+
+void UMultiplayerSessionsMenu::OnMpsJoinSession(EOnJoinSessionCompleteResult::Type Result)
+{
+}
+
+void UMultiplayerSessionsMenu::OnMpsStartSession(bool bWasSuccessful)
+{
+}
+
+void UMultiplayerSessionsMenu::OnMpsDestroySession(bool bWasSuccessful)
+{
 }
 
 void UMultiplayerSessionsMenu::HideMenu()

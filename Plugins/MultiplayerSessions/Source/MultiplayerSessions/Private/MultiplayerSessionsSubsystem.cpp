@@ -47,6 +47,8 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumberPublicConnections,
 	SessionSettings->bAllowJoinViaPresence = true;
 	SessionSettings->bUsesPresence = true;
 	SessionSettings->bShouldAdvertise = true;
+	SessionSettings->bUseLobbiesIfAvailable = true;
+	SessionSettings->bUseLobbiesVoiceChatIfAvailable = true;
 
 	const auto Player = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->CreateSession(*Player->GetPreferredUniqueNetId(), NAME_GameSession, *SessionSettings))

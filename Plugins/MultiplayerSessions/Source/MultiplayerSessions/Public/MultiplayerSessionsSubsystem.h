@@ -9,6 +9,10 @@
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMPSOnCreateSessionComplete, bool, bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMPSOnFindSessionsComplete,const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMPSOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMPSOnStartSessionComplete, bool, bWasSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMPSOnDestroySessionComplete, bool, bWasSuccessful);
 
 /**
  * Handles all online session functionality including creating, joining, searching and destroying sessions.
@@ -52,7 +56,11 @@ public:
 	void DestroySession();
 
 	// Delegate for the menu to bind to
-	FMPSOnCreateSessionComplete MPSCreateSessionComplete;
+	FMPSOnCreateSessionComplete  MPSCreateSessionComplete;
+	FMPSOnFindSessionsComplete   MPSFindSessionsComplete;
+	FMPSOnJoinSessionComplete    MPSJoinSessionComplete;
+	FMPSOnStartSessionComplete   MPSStartSessionComplete;
+	FMPSOnDestroySessionComplete MPSDestroySessionComplete;
 	
 protected:
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MultiplayerSessionsMenu.generated.h"
 
 class UMultiplayerSessionsSubsystem;
@@ -26,10 +27,20 @@ public:
 
 protected:
 
-	// Callback for the MPS delegate
+	// Callbacks for the MPS delegates
+	
 	UFUNCTION()
 	void OnMpsCreateSession(bool bWasSuccessful);
 	
+	void OnMpsFindSessions(const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessful);
+	
+	void OnMpsJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
+	UFUNCTION()
+	void OnMpsStartSession(bool bWasSuccessful);
+
+	UFUNCTION()
+	void OnMpsDestroySession(bool bWasSuccessful);
 private:
 
 	UPROPERTY(meta = (BindWidget))
