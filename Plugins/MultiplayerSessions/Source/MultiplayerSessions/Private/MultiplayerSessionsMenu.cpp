@@ -4,6 +4,7 @@
 #include "MultiplayerSessionsMenu.h"
 
 #include "MultiplayerSessionsSubsystem.h"
+#include "OnlineSubsystem.h"
 #include "Components/Button.h"
 
 void UMultiplayerSessionsMenu::ShowMenu(int32 NumPublicConnections, FString TypeOfMatch)
@@ -75,10 +76,46 @@ void UMultiplayerSessionsMenu::OnMpsCreateSession(bool bWasSuccessful)
 void UMultiplayerSessionsMenu::OnMpsFindSessions(const TArray<FOnlineSessionSearchResult>& SearchResults,
 	bool bWasSuccessful)
 {
+	if (!bWasSuccessful)
+	{
+		return;
+	}
+
+	// find first of same match type and connect
+	for (auto& Result : SearchResults)
+	{
+		FString FoundMatchType;
+		Result.Session.SessionSettings.Get("match_type", FoundMatchType);
+
+		if (MatchType == FoundMatchType)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, "Found session!");
+			}
+			MultiplayerSessionsSubsystem->JoinSession(Result);
+			break;
+		}
+	}
 }
 
 void UMultiplayerSessionsMenu::OnMpsJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+	const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (Subsystem)
+	{
+		if (IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface())
+		{
+			FString Addr;
+			SessionInterface->GetResolvedConnectString(NAME_GameSession, Addr);
+
+			auto Player = GetGameInstance()->GetFirstLocalPlayerController();
+			if (Player)
+			{
+				Player->ClientTravel(Addr, TRAVEL_Absolute);
+			}
+		}
+	}
 }
 
 void UMultiplayerSessionsMenu::OnMpsStartSession(bool bWasSuccessful)
@@ -113,7 +150,10 @@ void UMultiplayerSessionsMenu::HostButtonClicked()
 
 void UMultiplayerSessionsMenu::JoinButtonClicked()
 {
-
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->FindSession(10000);
+	}
 }
 
 bool UMultiplayerSessionsMenu::Initialize()

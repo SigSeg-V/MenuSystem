@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineSessionNames.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMenuSystemCharacter

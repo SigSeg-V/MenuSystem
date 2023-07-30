@@ -75,6 +75,7 @@ private:
 	
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSettings> SessionSettings;
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
 	// Delegates for the public methods, and are bound to the fn callbacks
 	FOnCreateSessionCompleteDelegate  CreateSessionCompleteDelegate;
