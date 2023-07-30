@@ -60,7 +60,8 @@ protected:
 	
 private:
 	
-	IOnlineSessionPtr OnlineSessionInterface;
+	IOnlineSessionPtr SessionInterface;
+	TSharedPtr<FOnlineSessionSettings> SessionSettings;
 
 	// Delegates for the public methods, and are bound to the fn callbacks
 	FOnCreateSessionCompleteDelegate  CreateSessionCompleteDelegate;

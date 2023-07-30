@@ -15,12 +15,48 @@ DestroySessionCompleteDelegate(FOnDestroySessionCompleteDelegate::CreateUObject(
 	const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem)
 	{
-	OnlineSessionInterface = Subsystem->GetSessionInterface();
+	SessionInterface = Subsystem->GetSessionInterface();
 	}
 }
 
 void UMultiplayerSessionsSubsystem::CreateSession(int32 NumberPublicConnections, FString MatchType)
 {
+	if (SessionInterface == nullptr)
+	{
+		return;
+	}
+
+	// check for session with name and destroy if available
+	auto Session = SessionInterface->GetNamedSession(NAME_GameSession);
+	if (Session != nullptr)
+	{
+		SessionInterface->DestroySession(NAME_GameSession);
+	}
+
+	// store handle to update delegate list
+	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
+
+	SessionSettings = MakeShareable(new FOnlineSessionSettings());
+	
+	// configure session
+	SessionSettings->NumPublicConnections = NumberPublicConnections;
+	SessionSettings->Set("match_type", MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings->bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
+	SessionSettings->bAllowJoinInProgress = true;
+	SessionSettings->bAllowInvites = true;
+	SessionSettings->bAllowJoinViaPresence = true;
+	SessionSettings->bUsesPresence = true;
+	SessionSettings->bShouldAdvertise = true;
+
+	const auto Player = GetWorld()->GetFirstLocalPlayerFromController();
+	if (!SessionInterface->CreateSession(*Player->GetPreferredUniqueNetId(), NAME_GameSession, *SessionSettings))
+	{
+		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("Made Host Session!"));
+	}
 }
 
 void UMultiplayerSessionsSubsystem::FindSession(int32 MaxSearchResults)

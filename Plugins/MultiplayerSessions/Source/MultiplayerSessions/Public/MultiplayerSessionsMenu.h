@@ -22,7 +22,7 @@ public:
 	 * @brief Sets up the usual defaults for a menu, free cursor, input removed from actor etc.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void MenuSetup();
+	void ShowMenu(int32 NumPublicConnections = 6, FString TypeOfMatch = "ffa");
 
 private:
 
@@ -38,7 +38,14 @@ private:
 	UFUNCTION()
 	void JoinButtonClicked();
 
-	virtual bool Initialize() override;
+	void HideMenu();
 
+	virtual bool Initialize() override;
+	virtual void NativeDestruct() override;
+
+	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	int32 NumConnections{6};
+	FString MatchType{"ffa"};
 };

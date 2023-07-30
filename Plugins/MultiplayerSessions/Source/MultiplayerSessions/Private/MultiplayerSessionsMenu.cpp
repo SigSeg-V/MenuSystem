@@ -6,12 +6,15 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "Components/Button.h"
 
-void UMultiplayerSessionsMenu::MenuSetup()
+void UMultiplayerSessionsMenu::ShowMenu(int32 NumPublicConnections, FString TypeOfMatch)
 {
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
 	SetIsFocusable(true);
 
+	NumConnections = NumPublicConnections;
+	MatchType = TypeOfMatch;
+	
 	UWorld* World = GetWorld();
 	if (World != nullptr)
 	{
@@ -35,6 +38,20 @@ void UMultiplayerSessionsMenu::MenuSetup()
 	}
 }
 
+void UMultiplayerSessionsMenu::HideMenu()
+{
+	RemoveFromParent();
+	if (UWorld* World = GetWorld())
+	{
+		if (auto Player = World->GetFirstPlayerController())
+		{
+			FInputModeGameOnly InputModeGameOnly;
+			Player->SetInputMode(InputModeGameOnly);
+			Player->SetShowMouseCursor(false);
+		}
+	}
+}
+
 void UMultiplayerSessionsMenu::HostButtonClicked()
 {
 	if (GEngine)
@@ -48,7 +65,11 @@ void UMultiplayerSessionsMenu::HostButtonClicked()
 
 	if (MultiplayerSessionsSubsystem != nullptr)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(6, "ffa");
+		MultiplayerSessionsSubsystem->CreateSession(NumConnections, MatchType);
+		if (UWorld* World = GetWorld())
+		{
+			World->ServerTravel("/Game/ThirdPerson/Maps/LobbyMap?listen");
+		}
 	}
 }
 
@@ -83,4 +104,11 @@ bool UMultiplayerSessionsMenu::Initialize()
 	}
 	
 	return true;
+}
+
+void UMultiplayerSessionsMenu::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	HideMenu();
 }
